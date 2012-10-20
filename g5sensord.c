@@ -42,9 +42,9 @@
 #include <termios.h>
 #include <fcntl.h>
 #include <errno.h>
-#include "bma220.h"
-#include "mmc31xx.h"
-#include "mecs.h"
+#include <linux/i2c/bma222.h>
+#include <linux/i2c/mmc31xx.h>
+#include <linux/i2c/mecs.h>
 
 
 /* maximum calibration model size supported in this code */
@@ -870,6 +870,7 @@ void ResetCalibrationFunc(void)
 	/* set the loop counter to 0 to denote first pass */
 	loopcounter = 0;
 
+
 	/* set valid calibration flag to false */
 	validcal = 0;
 
@@ -1130,7 +1131,7 @@ void fSixDOFSensorDrivers(int k)
 	if (prev_aflag==0 && prev_oflag==0) {
 		fd_bma = open("/dev/bma_accel", O_RDWR); }
 	short acc[3]={0};
-	ioctl_msg=BMA220_READ_ACCEL_XYZ;
+	ioctl_msg=BMA222_READ_ACCEL_XYZ;
 	res = ioctl(fd_bma, ioctl_msg, &acc);
 	fGpx = (float)acc[0]/256;
 	fGpy = (float)acc[1]/256;
