@@ -45,7 +45,12 @@
 #include <linux/i2c/bma222.h>
 #include <linux/i2c/mmc31xx.h>
 #include <linux/i2c/mecs.h>
+#include <signal.h>
 
+int enabled = 1;
+
+void sigusr1();          // USR1 signal => Enable the daemon function
+void sigusr2();        // USR1 signal => Enable the daemon function
 
 /* maximum calibration model size supported in this code */
 #define MAXCALELEMENTS 7
@@ -191,6 +196,9 @@ int main(int argc, char *argv[])
 	int ypr[13]={0};					/* sensor events */
 	int tmpyaw, tmppitch, tmproll=0;			/* temporary orientation value */
 	FILE *fp;
+	
+	signal(SIGUSR1,sigusr1);
+	signal(SIGUSR2,sigusr2);
 
 	/* apply the tweak for C's limitation on functions receiving variable size arrays */
 	/* slight overhead of additional storage since 2D arrays are replaced with 1D arrays */
@@ -278,6 +286,10 @@ int main(int argc, char *argv[])
 	/* keyboard command interpreter */
 	for (;;)
 	{
+	if (enabled == 0){
+		usleep(500000);
+		continue;
+	}
 	fd_ecompass = open("/dev/ecompass_ctrl", O_RDWR);
 	if (ioctl(fd_ecompass, ECOMPASS_IOC_GET_AFLAG, &aflag)<0)
 	{
@@ -1562,3 +1574,11 @@ void siftDown(int numbers[], int root, int bottom)
 	}
 	return;
 }
+void sigusr1(){
+	signal(SIGUSR1,sigusr1);
+	enabled = 1;
+}
+void sigusr2(){
+	signal(SIGUSR2,sigusr2);
+	enabled = 0;
+}  
