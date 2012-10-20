@@ -50,7 +50,7 @@
 int enabled = 1;
 
 void sigusr1();          // USR1 signal => Enable the daemon function
-void sigusr2();        // USR1 signal => Enable the daemon function
+void sigusr2();        // USR2 signal => Disable the daemon function
 
 /* maximum calibration model size supported in this code */
 #define MAXCALELEMENTS 7
